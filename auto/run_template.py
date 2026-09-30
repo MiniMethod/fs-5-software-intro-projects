@@ -5,7 +5,7 @@ from pid_template import calculate_desired_acceleration
 from pid_template import acceleration_to_throttle_percentage
 
 # Notes to self---
-# Ku = 20 , Tu or Pu = 2 people change how it said for some reason... for Ziegler Nicholas method
+# Ku = 20 , Tu or Pu = 0.2 people change how it said for some reason... for Ziegler Nicholas method
 # Ku was when it started doing sin patter
 # Tu how often each sine completes which was 2 steps 
 
