@@ -32,6 +32,8 @@ for steps in range(STEPS):
 	times.append(car["t"])
 
 
-plt.plot(velocities)
-plt.plot(errors)
+plt.figure(figsize=(10, 7))
+
+plt.scatter(times, velocities, c="orange", s=4, label="Velocities")
+plt.scatter(times, errors, c="b", s=4, label="Velocities")
 plt.show()
