@@ -14,6 +14,7 @@ def make_car(desired_v:float=20.0, dt:float=0.1) -> dict:
 		"de" : None, #derivate error of your car, rate of change of error
 		"desired_v" : desired_v, #desired velocity of your car, the velocity you want to maintain
 		"step" : 0,
+		"last_throttle_perc" : 0, #last throttle perc
 
 		#hint: use these variables in the integral and derivative portion of your PID control (steps 5 and 6 )
 		"error_prev" : None,
@@ -34,6 +35,7 @@ def update(car: dict, throttle_perc: float, mass: float = 1000, max_throttle_for
 	None, but updates the car's state variables
 	"""	
 	force = throttle_perc * max_throttle_force
+	car["last_throttle_perc"] = throttle_perc
 	car["a"] = (force / mass) - friction
 	car["v"] += car["a"] * car["dt"]
 	car["x"] += car["v"] * car["dt"]
