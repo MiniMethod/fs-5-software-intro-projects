@@ -3,19 +3,22 @@ from reinforcement_machine_learning import Env_For_Car, RL_Project
 
 # VARIABLES
 
-UPDATES = 2000
-BATCH_SIZE = 16
-GAMMA = 0.99
+UPDATES = 2000 # training - how many updates or batches you want to run during trianing
+BATCH_SIZE = 16 # training - how many episodes (games it plays) you want it to do per update during training
+GAMMA = 0.99 # training - how much you want the model to pay attention to its current decision... higher means it will look further ahead and a single bad idea it will think overall it was for a better reward (bad wording, covered easily online what gamma is)
 
-MAX_DT = 0.3
-MAX_V = 100
-STEPS = 550
+MAX_DT = 0.3 # training - max dt (delay time... like how often it will update per second... 0.1 is every 0.1 seconds) it will ever see (lowest is hard set to 0.1)
+MAX_V = 100 # training - max velocity it will ever see (lowest is hard set to 0)
+STEPS = 550 # training - how many dt per episode/game
 
-DESIRED_V = 20
-DESIRED_DT = 0.1
+DESIRED_V = 20 # testing - desired velocity to hit
+DESIRED_DT = 0.1 # testing - dt during testing game
 
-TOGGLE_TRAINING = True #True means on False means off
-LOAD_PREVIOUSE_MODEL_FOR_TRAINING = False #True mean will train using previouse model False means it will generate new model
+
+
+
+TOGGLE_TRAINING = True # training - toggle where model with train (true means it will)
+LOAD_PREVIOUSE_MODEL_FOR_TRAINING = False # training - toggles whether to load the previouse model for training or to make a new one from random tensors (True means it will start a new)
 
 
 # TRAINING
