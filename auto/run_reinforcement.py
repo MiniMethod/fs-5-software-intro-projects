@@ -17,9 +17,8 @@ DESIRED_DT = 0.1 # testing - dt during testing game
 
 
 
-TOGGLE_TRAINING = True # training - toggle where model with train (true means it will)
+TOGGLE_TRAINING = False # training - toggle where model with train (true means it will)
 LOAD_PREVIOUSE_MODEL_FOR_TRAINING = False # training - toggles whether to load the previouse model for training or to make a new one from random tensors (True means it will start a new)
-
 
 # TRAINING
 if (TOGGLE_TRAINING):
