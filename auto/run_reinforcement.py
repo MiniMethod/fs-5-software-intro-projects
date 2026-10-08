@@ -8,8 +8,8 @@ BATCH_SIZE = 16 # training - how many episodes (games it plays) you want it to d
 GAMMA = 0.99 # training - how much you want the model to pay attention to its current decision... higher means it will look further ahead and a single bad idea it will think overall it was for a better reward (bad wording, covered easily online what gamma is)
 
 MAX_DT = 0.3 # training - max dt (delay time... like how often it will update per second... 0.1 is every 0.1 seconds) it will ever see (lowest is hard set to 0.1)
-MAX_V = 100 # training - max velocity it will ever see (lowest is hard set to 0)
-STEPS = 550 # training - how many dt per episode/game
+MAX_V = 100 # training and training - max velocity it will ever see (lowest is hard set to 0)
+STEPS = 550 # training and training - how many dt per episode/game
 
 DESIRED_V = 20 # testing - desired velocity to hit
 DESIRED_DT = 0.1 # testing - dt during testing game
