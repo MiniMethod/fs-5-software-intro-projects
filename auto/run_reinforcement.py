@@ -30,7 +30,7 @@ if (TOGGLE_TRAINING):
 		rl_prj.load_model("train", "auto/car_throttle_policy.pth")
 
 	rl_prj.train(CarEnv, show_training_graphs=True, updates=UPDATES, batch_size=BATCH_SIZE, gamma=GAMMA)
-	rl_prj.save_model("car_throttle_policy.pth")
+	rl_prj.save_model("auto/car_throttle_policy.pth")
 
 
 #TESTING

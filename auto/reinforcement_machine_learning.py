@@ -5,6 +5,8 @@
 # https://docs.pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
 
 
+#addapted for pid
+
 import random
 
 import matplotlib.pyplot as plt
