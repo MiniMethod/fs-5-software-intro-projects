@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def make_car(desired_v:float=20.0, dt:float=0.1) -> dict:
+def make_car(desired_v:float=20.0, dt:float=0.1, mass: float = 1000, max_throttle_force: float = 5000, friction: float = 2.0) -> dict:
 	""" 
 	Generates a dictionary that holds all the car's values. Keeps track of state varaibles.
 	"""
@@ -15,6 +15,9 @@ def make_car(desired_v:float=20.0, dt:float=0.1) -> dict:
 		"desired_v" : desired_v, #desired velocity of your car, the velocity you want to maintain
 		"step" : 0,
 		"last_throttle_perc" : 0, #last throttle perc
+		"mass": mass,
+		"max_throttle_force": max_throttle_force,
+		"friction": friction,
 
 		#hint: use these variables in the integral and derivative portion of your PID control (steps 5 and 6 )
 		"error_prev" : None,
@@ -22,7 +25,7 @@ def make_car(desired_v:float=20.0, dt:float=0.1) -> dict:
 	}
 	return car_state_dictionary
 
-def update(car: dict, throttle_perc: float, mass: float = 1000, max_throttle_force: float = 5000, friction: float = 2.0) -> None:
+def update(car: dict, throttle_perc: float) -> None:
 	"""
 	Updates the car's state variables based on the throttle percentage.
 	Use this function after finding throttle percentage to update the car's state variables.
@@ -34,9 +37,9 @@ def update(car: dict, throttle_perc: float, mass: float = 1000, max_throttle_for
 	Outputs:
 	None, but updates the car's state variables
 	"""	
-	force = throttle_perc * max_throttle_force
+	force = throttle_perc * car["max_throttle_force"]
 	car["last_throttle_perc"] = throttle_perc
-	car["a"] = (force / mass) - friction
+	car["a"] = (force / car["mass"]) - car["friction"]
 	car["v"] += car["a"] * car["dt"]
 	car["x"] += car["v"] * car["dt"]
 	car["t"] += car["dt"]
@@ -64,11 +67,11 @@ def calculate_desired_acceleration(car: dict, K_P: float, K_I: float = 0.0, K_D:
 
 
 
-def acceleration_to_throttle_percentage(acceleration_desired: float, mass: float = 1000, max_throttle_force: float = 5000) -> float:
+def acceleration_to_throttle_percentage(acceleration_desired: float, car: dict) -> float:
 	#input: desired_acceleration(float)
 	#output: throttle percentage (float, -1 to 1)
 
-	max_acceleration = max_throttle_force / mass
+	max_acceleration = car["max_throttle_force"] / car["mass"]
 	throttle = acceleration_desired / max_acceleration
 	throttle_perc = np.clip(throttle, -1, 1)
 

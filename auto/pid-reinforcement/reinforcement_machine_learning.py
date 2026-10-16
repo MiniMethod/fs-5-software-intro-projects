@@ -13,6 +13,7 @@ import random
 import sys
 
 import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torch.nn.functional as F
 from torch import nn
@@ -33,31 +34,39 @@ device = "cpu"
 print("Device used: " + device)
 
 class Env_For_Car():
-	def __init__(self, max_v:float=100, max_dt:float=0.3, steps:int=250):
+	def __init__(self, max_v:float=100, max_dt:float=0.3, max_throttle_force:float=10000, max_friction:float=2.0, steps:int=250):
 		self.currentCar = None
-		self.max_v = max_v * 1.2
-		self.max_dt = max_dt * 1.2
+		self.max_v = max_v
+		self.max_dt = max_dt
+		self.max_throttle_force = max_throttle_force
+		self.max_friction = max_friction
+
+		self.max_v_adjusted = max_v * 1.2
+		self.max_dt_adjusted = max_dt * 1.2
+		self.max_throttle_force_adjusted = max_throttle_force * 1.2
+		self.max_friction_adjusted = max_friction * 1.2
+
 		self.steps = steps
 		self.prev_rewards = [0]
 
-	def create_car(self, desired_v:float, dt:float):
-		self.currentCar = make_car(desired_v=desired_v, dt=dt)
+	def create_car(self, desired_v:float, dt:float, mass: float = 1000, max_throttle_force: float = 5000, friction: float = 2.0):
+		self.currentCar = make_car(desired_v, dt, mass, max_throttle_force, friction)
 		self.prev_reward = 0
 
 	def get_state(self):
-		return [(self.currentCar["desired_v"] / self.max_v), (self.currentCar["dt"] / self.max_dt), (self.currentCar["v"] / self.max_v)]
+		return [(self.currentCar["desired_v"] / self.max_v_adjusted), (self.currentCar["dt"] / self.max_dt_adjusted), (self.currentCar["v"] / self.max_v_adjusted), (self.currentCar["max_throttle_force"] / self.max_throttle_force_adjusted), (self.currentCar["friction"] / self.max_friction_adjusted)]
 
 	def step(self, P:float, I:float, D:float):
 		# old_error = abs(self.currentCar["desired_v"] - self.currentCar["v"])
 		acceleration_desired, _ = calculate_desired_acceleration(self.currentCar, P, I, D)
-		throttle_perc = acceleration_to_throttle_percentage(acceleration_desired)
+		throttle_perc = acceleration_to_throttle_percentage(acceleration_desired, self.currentCar)
 		update(self.currentCar, throttle_perc)
 		done = False
 		if (self.currentCar["step"] >= self.steps):
 			done = True
 
 		error = abs(self.currentCar["desired_v"] - self.currentCar["v"])
-		reward = -error / self.max_v
+		reward = -error / self.max_v_adjusted
 
 		#try changing these values as it gets closer like load model and have these more strict/better reward
 		reward += 0.1 * (0.2 / max(error, 0.1))
@@ -100,7 +109,7 @@ class RL_Project():
 		random.seed(seed)
 		torch.manual_seed(seed)
 
-		self.policy = Policy_Gradient(n_observations=3).to(device) #set the model and gradient descent
+		self.policy = Policy_Gradient(n_observations=5).to(device) #set the model and gradient descent
 		self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=1e-3) # optimizer for the loss
 		self.average_reward = []
 		self.average_reward_times = []
@@ -159,9 +168,11 @@ class RL_Project():
 			
 			for _ in range(batch_size):
 				#make a random desired velocity and desired dt then creates the car enviroment with
-				desired_v = round(random.uniform(0, 100), 1)
-				dt = round(random.uniform(0.1, 0.3), 2)
-				env_car.create_car(desired_v=desired_v, dt=dt)
+				desired_v = round(random.uniform(0, env_car.max_v), 1)
+				dt = round(random.uniform(0.1, env_car.max_dt), 2)
+				throttle_force = round(random.uniform(3000, env_car.max_throttle_force), 2)
+				friction = round(random.uniform(1, env_car.max_friction_adjusted), 2)
+				env_car.create_car(desired_v=desired_v, dt=dt, max_throttle_force=throttle_force, friction=friction)
 
 				log_probs, rewards = [], []
 				done = False
@@ -203,6 +214,9 @@ class RL_Project():
 			#graphs reward overtime along with saves it
 			plt.figure(figsize=(10, 7))
 			plt.scatter(self.average_reward_times, self.average_reward, c="orange", s=4, label="Average reward over update")
+			times_array = np.array(self.average_reward_times)
+			slope, intercept = np.polyfit(times_array, self.average_reward, 1)
+			plt.plot(times_array, slope * times_array + intercept, color='green', linestyle='-', linewidth=2, label='Average reward over update trend line')
 			plt.title("Average reward over update")
 			plt.savefig("auto/pid-reinforcement/Average_Reward_Over_Update_Last_Training_Run.png")
 			plt.show()

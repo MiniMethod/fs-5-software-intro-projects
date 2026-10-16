@@ -8,22 +8,25 @@ BATCH_SIZE = 32 # training - how many episodes (games it plays) you want it to d
 GAMMA = 0.99 # training - how much you want the model to pay attention to its current decision... higher means it will look further ahead and a single bad idea it will think overall it was for a better reward (bad wording, covered easily online what gamma is)
 
 MAX_DT = 0.3 # training - max dt (delay time... like how often it will update per second... 0.1 is every 0.1 seconds) it will ever see (lowest is hard set to 0.1)
-MAX_V = 100 # training and training - max velocity it will ever see (lowest is hard set to 0)
-STEPS = 550 # training and training - how many dt per episode/game
+MAX_V = 100 # training and testing - max velocity it will ever see (lowest is hard set to 0)
+MAX_THROTTLE_FORCE = 10000 # training and testing - max throttle force, min is set to 3000
+MAX_FRICTION = 2.5 # training and testing - max friction number, min hard set to 1.0
+STEPS = 1000 # training and testing - how many dt per episode/game
 
 DESIRED_V = 20 # testing - desired velocity to hit
 DESIRED_DT = 0.1 # testing - dt during testing game
+MASS = 1000 # testing - M
+FRICTION = 2 # testing - friction number
+THROTTLE_FORCE = 5000 # testing - max throttle due 
 
 
-
-
-TOGGLE_TRAINING = False # training - toggle where model with train (true means it will)
+TOGGLE_TRAINING = True # training - toggle where model with train (true means it will)
 LOAD_PREVIOUSE_MODEL_FOR_TRAINING = False # training - toggles whether to load the previouse model for training or to make a new one from random tensors (True means it will start a new)
 
 # TRAINING
 if (TOGGLE_TRAINING):
 
-	CarEnv = Env_For_Car(max_v=MAX_V, max_dt=MAX_DT, steps=STEPS)
+	CarEnv = Env_For_Car(max_v=MAX_V, max_dt=MAX_DT, max_throttle_force=MAX_THROTTLE_FORCE, max_friction=MAX_FRICTION, steps=STEPS)
 
 	rl_prj = RL_Project()
 	if (LOAD_PREVIOUSE_MODEL_FOR_TRAINING):
@@ -35,7 +38,7 @@ if (TOGGLE_TRAINING):
 
 #TESTING
 # create car enviroment obj
-CarEnv = Env_For_Car(max_v=MAX_V, max_dt=MAX_DT, steps=STEPS)
+CarEnv = Env_For_Car(max_v=MAX_V, max_dt=MAX_DT, max_throttle_force=MAX_THROTTLE_FORCE, max_friction=MAX_FRICTION, steps=STEPS)
 
 # create reinforcement learning obj and loads the model
 rl_prj = RL_Project()
@@ -47,7 +50,7 @@ times = []
 errors = []
 
 # create car enviroment
-car = CarEnv.create_car(desired_v=DESIRED_V, dt=DESIRED_DT)
+car = CarEnv.create_car(desired_v=DESIRED_V, dt=DESIRED_DT, max_throttle_force=THROTTLE_FORCE, friction=FRICTION)
 
 # runs the model for each step
 P, I, D = rl_prj.get_pid_from_loaded_model(CarEnv)

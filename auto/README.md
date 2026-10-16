@@ -2,6 +2,9 @@
 
 There are two different main files in this project
 
+# BEING WORKED ON/WILL REPLACE OTHER ONE pid-reinforcement/run_reinforcement.py is for running machine learning to calculate the pid system
+
+
 # run_reinforcement.py is for running machine learning
 This is where you can run my machine learning algorithm for the car, there is an already include trained model that will load on its own.
 All variables are at the top to customize training and the enviroment, it will also plot your training results for you when its done training.
